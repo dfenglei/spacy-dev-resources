@@ -11,7 +11,6 @@ BROWN_DIR = SCRIPTS_DIR + "/" + "brown"
 CORPUS_DIR = "./data/corpora/{lang}"
 MODEL_DIR = "./data/model/{lang}"
 
-
 @task
 def clean_corpora(language):
     local("rm -rf {}".format(CORPUS_DIR.format(lang=language)))
@@ -46,7 +45,7 @@ def install_dep(env_dir=None):
     if env_dir is not None:
         local("virtualenv {}".format(env_dir))
     with optional_venv(env_dir, local=True):
-        local("pip install textacy==0.3.2 plac==0.9.6 spacy gensim==1.0.1 tqdm")
+        local("pip install textacy plac==0.9.6 spacy gensim==1.0.1 tqdm")
     install_brown()
 
 
