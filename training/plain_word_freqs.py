@@ -14,8 +14,6 @@ import six
 from tqdm import tqdm
 
 TMP_DIR = tempfile.mkdtemp()
-print(TMP_DIR)
-print("A")
 
 
 def count_words(fpath):
