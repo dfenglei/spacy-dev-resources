@@ -28,7 +28,7 @@ def count_words(fpath):
 
 def main(input_glob, out_loc, workers=4):
     p = Pool(processes=workers)
-    freq_path = p.map(count_words, glob.iglob(input_glob))
+    freq_path = p.map(count_words, tqdm(list(glob.glob(input_glob))))
     df_counts = Counter()
     word_counts = Counter()
     for fp in tqdm(freq_path):
