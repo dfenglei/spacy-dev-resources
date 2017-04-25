@@ -66,7 +66,7 @@ def build_wiki_vocab(language, env=None):
 
 
 @task
-def build_vocab(language, corpus_files_root):
+def build_vocab(language, corpus_files_root, workers=4):
     corpus_dir = CORPUS_DIR.format(lang=language)
     local("mkdir -p {}".format(corpus_dir))
 
@@ -77,13 +77,13 @@ def build_vocab(language, corpus_files_root):
     merge_corpus(corpus_files_root, corpus_file)
 
     word_freq_path = join(model_dir, "{}_wiki.freqs".format(language))
-    word_counts(corpus_files_root + "/*", word_freq_path)
+    word_counts(corpus_files_root + "/*", word_freq_path, workers=workers)
 
     word2vec_model_path = join(model_dir, "{}_wiki.word2vec".format(language))
-    word2vec(corpus_file, word2vec_model_path)
+    word2vec(corpus_file, word2vec_model_path, workers=workers)
 
     brown_out_dir = join(model_dir, "brown")
-    brown_clusters(corpus_file, brown_out_dir)
+    brown_clusters(corpus_file, brown_out_dir, workers=workers)
 
     init_vocab(language, model_dir, word_freq_path, word2vec_model_path, brown_out_dir)
 
@@ -106,7 +106,7 @@ def merge_corpus(corpus_files_root, unified_corpus_path):
         ))
 
 
-def word2vec(corpus_path, out_path, dim=150, threads=4, min_count=10, cbow=0):
+def word2vec(corpus_path, out_path, dim=150, workers=4, min_count=10, cbow=0):
     local("mkdir -p {}".format(dirname(out_path)))
     local(
         "python -m gensim.scripts.word2vec_standalone " +
@@ -114,7 +114,7 @@ def word2vec(corpus_path, out_path, dim=150, threads=4, min_count=10, cbow=0):
             corpus_file=corpus_path,
             dim=dim,
             file=out_path,
-            threads=threads,
+            threads=workers,
             min=min_count,
             cbow=cbow
         )
@@ -131,11 +131,12 @@ def word2vec(corpus_path, out_path, dim=150, threads=4, min_count=10, cbow=0):
     # )
 
 
-def word_counts(input_glob, out_path):
-    local("python training/plain_word_freqs.py \"{input_glob}\" {out}".format(input_glob=input_glob, out=out_path))
+def word_counts(input_glob, out_path, workers=4):
+    local("python training/plain_word_freqs.py \"{input_glob}\" {out}".format(input_glob=input_glob, out=out_path,
+                                                                              workers=workers))
 
 
-def brown_clusters(corpus_path, output_dir, clusters=2 ** 10, threads=4):
+def brown_clusters(corpus_path, output_dir, clusters=2 ** 10, workers=4):
     local("mkdir -p {}".format(output_dir))
     brown_script = join(BROWN_DIR, "wcluster")
     local(
@@ -143,7 +144,7 @@ def brown_clusters(corpus_path, output_dir, clusters=2 ** 10, threads=4):
             bs=brown_script,
             corpus_file=corpus_path,
             clusters=clusters,
-            threads=threads,
+            threads=workers,
             output_dir=output_dir
         )
     )
