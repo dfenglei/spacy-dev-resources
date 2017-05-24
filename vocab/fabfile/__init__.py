@@ -51,7 +51,7 @@ def install_dep(env_dir=None):
 
 
 @task
-def build_wiki_vocab(language, env=None):
+def extract_wiki(language, env=None):
     corpus_dir = CORPUS_DIR.format(lang=language)
     local("mkdir -p {}".format(corpus_dir))
 
@@ -62,6 +62,13 @@ def build_wiki_vocab(language, env=None):
     corpus_files_root = join(corpus_dir, "wiki")
     wikipedia.extract(env, dump_path, corpus_files_root, language)
 
+
+@task
+def build_wiki_vocab(language, env=None):
+    extract_wiki(language, env)
+
+    corpus_dir = CORPUS_DIR.format(lang=language)
+    corpus_files_root = join(corpus_dir, "wiki")
     build_vocab(language, corpus_files_root)
 
 
