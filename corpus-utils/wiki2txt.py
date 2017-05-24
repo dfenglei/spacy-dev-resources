@@ -28,7 +28,7 @@ def tokenize_sentence_split(text, nlp):
             yield " ".join(tok_acc)
 
 
-def clean_lines(txt, min_char_ratio=0.9, min_length=50):
+def clean_lines(txt, min_char_ratio=0.75, min_length=20):
     txt = ftfy.fix_text(txt)
     for line in txt.split(u"\n"):
         line = TAG.sub(u"", line.strip())
