@@ -108,7 +108,7 @@ def init_vocab(language, model_dir, word_freq_path, word2vec_model_path, brown_o
 
 def merge_corpus(corpus_files_root, unified_corpus_path):
     local(
-        "find {path} -name '*.txt' | xargs cat > {out_file}".format(
+        "find {path} -type f | xargs cat > {out_file}".format(
             path=corpus_files_root, out_file=unified_corpus_path
         ))
 
